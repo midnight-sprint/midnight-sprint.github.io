@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>❤️ Сюрприз с секретом ❤️</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Lobster&family=Roboto:wght@300;400&display=swap');
+        :root {
+            --primary-red: #ff4d6d;
+            --soft-pink: #ffb3c1;
+            --envelope-color: #ff8fa3;
+            --bg-gradient: linear-gradient(135deg, #fff5f7 0%, #ffe3e8 100%);
+        }
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: var(--bg-gradient);
+            font-family: 'Roboto', sans-serif;
+            overflow: hidden;
+            text-align: center;
+        }
+        /* Анимированные сердечки */
+        .floating-heart {
+            position: absolute;
+            font-size: 30px;
+            color: var(--primary-red);
+            filter: drop-shadow(0 0 5px rgba(255, 77, 109, 0.3));
+            animation: sway 3.5s ease-in-out infinite;
+            z-index: 1;
+        }
+        @keyframes sway {
+            0%, 100% { transform: translateY(0) rotate(-10deg); }
+            50% { transform: translateY(-25px) rotate(10deg); }
+        }
+        
+        /* Стили для блока с паролем */
+        #password-gate {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg-gradient);
+            z-index: 100;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.5s ease;
+        }
+        .password-box {
+            background: white;
+            padding: 40px 30px;
+            border-radius: 30px;
+            box-shadow: 0 15px 35px rgba(255, 77, 109, 0.2);
+            width: 90%;
+            max-width: 400px;
+        }
+        /* ✨ Картинка в блоке пароля ✨ */
+        .password-image {
+            width: 100%;
+            max-width: 150px; /* Размер картинки */
+            border-radius: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .password-box h1 {
+            font-family: 'Lobster', cursive;
+            color: var(--primary-red);
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+        }
+        .password-box p {
+            color: #777;
+            margin-bottom: 25px;
+            line-height: 1.5;
+        }
+        #passwordInput {
+            width: 80%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 50px;
+            text-align: center;
+            font-size: 1rem;
+            margin-bottom: 20px;
+            transition: border-color 0.3s;
+        }
+        #passwordInput:focus {
+            outline: none;
+            border-color: var(--primary-red);
+        }
+        #passwordError {
+            color: var(--primary-red);
+            font-size: 0.9rem;
+            height: 20px;
+            margin-top: -10px;
+            margin-bottom: 10px;
+        }
+        #passwordSubmit {
+             background-color: var(--primary-red);
+            color: white;
+            padding: 12px 35px;
+            box-shadow: 0 8px 15px rgba(255, 77, 109, 0.3);
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+        .shake {
+            animation: shake 0.5s ease-in-out;
+        }
+
+        .container {
+            display: none; /* Изначально скрыто */
+            position: relative;
+            z-index: 10;
+            width: 90%;
+            max-width: 400px;
+        }
+        .prompt-box {
+            background: white;
+            padding: 40px 20px;
+            border-radius: 30px;
+            box-shadow: 0 15px 35px rgba(255, 77, 109, 0.2);
+            transition: all 0.5s ease;
+        }
+        h1 {
+            font-family: 'Lobster', cursive;
+            color: var(--primary-red);
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            color: #888;
+            font-size: 0.9rem;
+            margin-bottom: 30px;
+        }
+        .buttons {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+        button {
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        #yesBtn {
+            background-color: var(--primary-red);
+            color: white;
+            padding: 15px 40px;
+            box-shadow: 0 8px 15px rgba(255, 77, 109, 0.3);
+        }
+        #noBtn {
+            background-color: #f0f0f0;
+            color: #ff4d6d;
+            padding: 10px 25px;
+            font-weight: bold;
+            border: 1px dashed var(--primary-red);
+        }
+        /* КОНВЕРТ */
+        .envelope-wrapper {
+            display: none;
+            position: relative;
+            width: 280px;
+            height: 180px;
+            background-color: var(--envelope-color);
+            margin: 0 auto;
+            border-bottom-left-radius: 10px;
+            border-bottom-right-radius: 10px;
+        }
+        .envelope-wrapper::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0;
+            border-top: 100px solid var(--soft-pink);
+            border-left: 140px solid transparent;
+            border-right: 140px solid transparent;
+            z-index: 4;
+            transition: transform 0.6s ease;
+            transform-origin: top;
+        }
+        .letter {
+            position: absolute;
+            bottom: 10px; left: 10px; right: 10px;
+            height: 80%;
+            background: white;
+            z-index: 2;
+            transition: all 0.8s ease;
+            padding: 20px;
+            box-sizing: border-box;
+            border-radius: 5px;
+            opacity: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .envelope-wrapper.open::before {
+            transform: rotateX(180deg);
+            z-index: 1;
+        }
+        .envelope-wrapper.open .letter {
+            transform: translateY(-130px);
+            height: 260px;
+            opacity: 1;
+            z-index: 5;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+        }
+        .letter h2 {
+            font-family: 'Lobster', cursive;
+            color: var(--primary-red);
+            margin: 0;
+        }
+        .letter p {
+            font-size: 0.95rem;
+            color: #444;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+    <!-- ✨ Больше сердечек ✨ -->
+    <div class="floating-heart" style="top: 10%; left: 5%; font-size: 25px;">❤️</div>
+    <div class="floating-heart" style="bottom: 15%; right: 10%; animation-delay: 1.5s;">💖</div>
+    <div class="floating-heart" style="top: 25%; right: 20%; animation-delay: 0.5s; font-size: 20px;">💕</div>
+    <div class="floating-heart" style="bottom: 5%; left: 12%; animation-delay: 2.5s;">💗</div>
+    <div class="floating-heart" style="top: 50%; left: 15%; animation-delay: 1s; font-size: 28px;">❤️</div>
+    <div class="floating-heart" style="top: 80%; right: 5%; animation-delay: 3s;">💖</div>
+    <div class="floating-heart" style="top: 5%; right: 8%; animation-delay: 2s; font-size: 22px;">💕</div>
+
+
+    <!-- Блок с паролем -->
+    <div id="password-gate">
+        <div class="password-box">
+            <!-- ✨ Вот и картинка ✨ -->
+            <img src="0a8c86ef8324bab8614234b0c50acae6.jpg" alt="cat with glasses" class="password-image">
+            
+            <h1>Сначала Пароль! 🕵️‍♀️</h1>
+            <p>А потом уже валентинка 💅</p>
+            <input type="text" id="passwordInput" placeholder="Введите ответ...">
+            <div id="passwordError"></div>
+            <button id="passwordSubmit">Проверить</button>
+        </div>
+    </div>
+    
+    <!-- Основной контент -->
+    <div class="container" id="mainContainer">
+        <div class="prompt-box" id="promptBox">
+            <h1 id="mainTitle">Тут Твоя Валентинка 🤫</h1>
+            <p class="subtitle" id="subTitle">Только чур на «Нет» не нажимать!</p>
+            <div class="buttons">
+                <button id="yesBtn">Открыть! ✨</button>
+                <button id="noBtn">Не нажимать</button>
+            </div>
+        </div>
+
+        <div class="envelope-wrapper" id="envelope" onclick="openLetter()">
+            <div class="letter">
+                <h2>Любимой Насте ❤️</h2>
+                <p>
+                    С Днем Святого Валентина! Ты вообще лучшая, самая красивая, самая хорошая, самая самая короче❤️ <br><br>
+                    Спасибо за твою любовь, доброту и за то, что ты просто есть.Обнимаю крепко-крепко! 😘 <br><br>
+                    Твой Арсений 
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- Логика для пароля ---
+        const passwordGate = document.getElementById('password-gate');
+        const passwordBox = document.querySelector('.password-box');
+        const passwordInput = document.getElementById('passwordInput');
+        const passwordSubmit = document.getElementById('passwordSubmit');
+        const passwordError = document.getElementById('passwordError');
+        const mainContainer = document.getElementById('mainContainer');
+        
+        const correctPassword = 'я люблю тебя';
+
+        const checkPassword = () => {
+            const enteredPassword = passwordInput.value.trim().toLowerCase();
+            if (enteredPassword === correctPassword) {
+                passwordGate.style.opacity = '0';
+                setTimeout(() => {
+                    passwordGate.style.display = 'none';
+                    mainContainer.style.display = 'block';
+                    mainContainer.style.animation = 'fadeIn 0.8s ease forwards';
+                }, 500);
+            } else {
+                passwordError.textContent = 'Неверно, но близко! Попробуй еще раз.';
+                passwordBox.classList.add('shake');
+                passwordInput.value = '';
+                setTimeout(() => {
+                    passwordBox.classList.remove('shake');
+                }, 500);
+            }
+        };
+
+        passwordSubmit.addEventListener('click', checkPassword);
+        passwordInput.addEventListener('keyup', (event) => {
+            if (event.key === 'Enter') {
+                checkPassword();
+            }
+        });
+
+        // --- Основная логика ---
+        const promptBox = document.getElementById('promptBox');
+        const envelope = document.getElementById('envelope');
+        const yesBtn = document.getElementById('yesBtn');
+        const noBtn = document.getElementById('noBtn');
+        const mainTitle = document.getElementById('mainTitle');
+        const subTitle = document.getElementById('subTitle');
+
+        const noMessages = [
+            "Я же просил! 🛑", "Всё равно жмешь? 😂", "А ты упрямая...", "Твоё упрямство такое милое!",
+            "Может, передумаешь? 🤔", "Кнопка «Да» становится всё больше...", "Неужели совсем не любопытно?",
+            "Я почти сдался... но ты нажми «Да» 🙏", "Ладно-ладно, твоя взяла! Но сюрприз ждет за кнопкой «Да» 😉",
+            "Кнопка «Да» скучает по тебе!"
+        ];
+        let noIdx = 0;
+
+        noBtn.addEventListener('click', () => {
+            if (noIdx === 0) {
+                mainTitle.textContent = "Я СДЕЛАЛ ВЫВОДЫ";
+                subTitle.textContent = "Я же сказал не нажимай! Теперь кнопка «Да» будет расти, пока ты не согласишься.";
+                subTitle.style.color = "#ff4d6d";
+            }
+            if (noIdx < noMessages.length) {
+                noBtn.textContent = noMessages[noIdx];
+                noIdx++;
+            } else {
+                noBtn.textContent = "Просто нажми «Да» ❤️";
+            }
+            const currentSize = parseFloat(window.getComputedStyle(yesBtn).fontSize);
+            yesBtn.style.fontSize = (currentSize * 1.2) + 'px';
+            yesBtn.style.padding = (currentSize * 0.7) + 'px ' + (currentSize * 1.5) + 'px';
+        });
+
+        yesBtn.addEventListener('click', () => {
+            promptBox.style.opacity = '0';
+            setTimeout(() => {
+                promptBox.style.display = 'none';
+                envelope.style.display = 'block';
+                envelope.style.animation = 'fadeIn 0.8s ease forwards';
+            }, 500);
+        });
+
+        function openLetter() {
+            envelope.classList.add('open');
+        }
+    </script>
+</body>
+</html>
